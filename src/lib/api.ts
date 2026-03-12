@@ -111,3 +111,18 @@ export async function triggerManualPost(topic?: string): Promise<ManualPostRespo
     body: JSON.stringify(topic ? { topic } : {}),
   });
 }
+
+export interface CommentStatus {
+  total_comments_replied: number;
+  replied_in_last_24h: number;
+  auto_reply_enabled: boolean;
+  check_interval_hours: number;
+}
+
+export async function getCommentStatus(): Promise<CommentStatus> {
+  return apiFetch<CommentStatus>("/comments/status");
+}
+
+export async function triggerCommentCheck(): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>("/comments/check", { method: "POST" });
+}

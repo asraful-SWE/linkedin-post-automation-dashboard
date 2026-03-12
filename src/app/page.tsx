@@ -10,6 +10,7 @@ import {
 import StatsCard from "@/components/StatsCard";
 import TopicChart from "@/components/TopicChart";
 import GenerateButton from "@/components/GenerateButton";
+import CommentCard from "@/components/CommentCard";
 import { FileText, TrendingUp, Clock, Calendar, Loader2, BarChart3, Layers } from "lucide-react";
 
 export default function DashboardPage() {
@@ -153,6 +154,9 @@ export default function DashboardPage() {
 
       {/* Topic chart */}
       <TopicChart data={topicData} />
+
+      {/* Comment auto-reply card */}
+      <CommentCard />
     </div>
   );
 }
