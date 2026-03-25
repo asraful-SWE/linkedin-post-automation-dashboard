@@ -2,6 +2,18 @@ const API_BASE = "/api/proxy";
 
 // ---- Response types matching actual backend ----
 
+export type PostStatus = "pending" | "approved" | "published" | "rejected";
+
+export interface PostItem {
+  id: number;
+  topic: string;
+  content: string;
+  status: PostStatus;
+  image_url?: string | null;
+  created_at: string;
+  linkedin_post_id?: string | null;
+}
+
 export interface TopicBreakdown {
   topic: string;
   posts: number;
@@ -64,6 +76,18 @@ export interface ManualPostResponse {
   post_id?: number;
   linkedin_post_id?: string;
   topic?: string;
+  status?: PostStatus;
+  email_sent?: boolean;
+  error?: string;
+}
+
+export interface ApproveRejectResponse {
+  success?: boolean;
+  message?: string;
+  status?: PostStatus;
+  post_id?: number;
+  linkedin_post_id?: string;
+  detail?: string;
   error?: string;
 }
 
@@ -81,6 +105,23 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
     throw new Error(`API error: ${res.status} ${res.statusText}`);
   }
   return res.json() as Promise<T>;
+}
+
+async function apiFetchForm<T>(endpoint: string, formData: FormData): Promise<T> {
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    throw new Error(`API error: ${res.status} ${res.statusText}`);
+  }
+
+  const contentType = res.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
+    return res.json() as Promise<T>;
+  }
+
+  return { message: "Approved successfully" } as T;
 }
 
 // ---- API functions matching actual backend routes ----
@@ -106,9 +147,47 @@ export async function getRecommendedTopics(count = 5): Promise<string[]> {
 }
 
 export async function triggerManualPost(topic?: string): Promise<ManualPostResponse> {
-  return apiFetch<ManualPostResponse>("/post/manual", {
+  return apiFetch<ManualPostResponse>("/generate-post", {
     method: "POST",
     body: JSON.stringify(topic ? { topic } : {}),
+  });
+}
+
+export async function generatePost(topic?: string): Promise<ManualPostResponse> {
+  return triggerManualPost(topic);
+}
+
+export async function getPosts(status?: string): Promise<PostItem[]> {
+  const query = status && status !== "all" ? `?status=${encodeURIComponent(status)}` : "";
+  return apiFetch<PostItem[]>(`/posts${query}`);
+}
+
+export async function approvePost(params: {
+  postId: number;
+  imageUrl?: string;
+  imageFile?: File | null;
+}): Promise<ApproveRejectResponse> {
+  const { postId, imageUrl, imageFile } = params;
+
+  if (imageUrl || imageFile) {
+    const formData = new FormData();
+    if (imageUrl) {
+      formData.append("image_url", imageUrl);
+    }
+    if (imageFile) {
+      formData.append("image_file", imageFile);
+    }
+    return apiFetchForm<ApproveRejectResponse>(`/approve-post/${postId}`, formData);
+  }
+
+  return apiFetch<ApproveRejectResponse>(`/approve-post/${postId}`, {
+    method: "GET",
+  });
+}
+
+export async function rejectPost(postId: number): Promise<ApproveRejectResponse> {
+  return apiFetch<ApproveRejectResponse>(`/reject-post/${postId}`, {
+    method: "GET",
   });
 }
 

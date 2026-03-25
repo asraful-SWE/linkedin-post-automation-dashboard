@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FileText, BarChart3, X, Menu } from "lucide-react";
+import { LayoutDashboard, FileText, BarChart3, Clock3, X, Menu } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/pending-posts", label: "Pending Posts", icon: Clock3 },
   { href: "/posts", label: "Posts", icon: FileText },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
 ];
@@ -46,7 +47,7 @@ export default function Sidebar() {
         </div>
         <nav className="flex-1 space-y-1 p-4">
           {navItems.map(({ href, label, icon: Icon }) => {
-            const active = pathname === href;
+            const active = href === "/dashboard" ? pathname === "/" || pathname === "/dashboard" : pathname === href;
             return (
               <Link
                 key={href}

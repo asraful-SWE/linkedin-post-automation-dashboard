@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { triggerManualPost } from "@/lib/api";
+import { generatePost } from "@/lib/api";
 import { Loader2, Zap } from "lucide-react";
 
-export default function GenerateButton() {
+type GenerateButtonProps = {
+  onGenerated?: () => void;
+};
+
+export default function GenerateButton({ onGenerated }: GenerateButtonProps) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
 
@@ -12,8 +16,16 @@ export default function GenerateButton() {
     setLoading(true);
     setResult(null);
     try {
-      const res = await triggerManualPost();
-      setResult({ success: res.success, message: res.message || "Post generated successfully!" });
+      const res = await generatePost();
+      const message =
+        res.message ||
+        (res.success
+          ? "Post generated and sent for approval."
+          : "Failed to generate post.");
+      setResult({ success: res.success, message });
+      if (res.success) {
+        onGenerated?.();
+      }
     } catch (err) {
       setResult({ success: false, message: err instanceof Error ? err.message : "Failed to generate post." });
     } finally {
@@ -36,7 +48,7 @@ export default function GenerateButton() {
         ) : (
           <>
             <Zap size={16} />
-            Generate Post Now
+            Generate New Post
           </>
         )}
       </button>
