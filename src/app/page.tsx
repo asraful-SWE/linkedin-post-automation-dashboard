@@ -2,6 +2,7 @@
 
 import { useDashboard } from "@/hooks/useDashboard";
 import { useToast } from "@/hooks/useToast";
+import { useAutoImages } from "@/hooks/useAutoImages";
 import { useEffect } from "react";
 import StatsCard from "@/components/StatsCard";
 import TopicChart from "@/components/TopicChart";
@@ -24,6 +25,7 @@ import {
 export default function DashboardPage() {
   const { dashboard, scheduler, loading, error, lastUpdated, refetch } =
     useDashboard(true);
+  const { enabled: autoImagesEnabled } = useAutoImages();
   const toast = useToast();
 
   useEffect(() => {
@@ -65,7 +67,7 @@ export default function DashboardPage() {
         },
         {
           key: "Auto Images",
-          ok: !!systemStatus.image_auto_selection,
+          ok: autoImagesEnabled,
           icon: "🖼️",
         },
       ]
@@ -174,8 +176,8 @@ export default function DashboardPage() {
                   {
                     icon: <ImageIcon size={16} />,
                     label: "Auto Images",
-                    val: scheduler.image_auto_selection ? "ON" : "OFF",
-                    color: scheduler.image_auto_selection
+                    val: autoImagesEnabled ? "ON" : "OFF",
+                    color: autoImagesEnabled
                       ? "text-emerald-600"
                       : "text-zinc-400",
                   },

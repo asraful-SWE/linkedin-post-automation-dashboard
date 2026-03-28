@@ -107,10 +107,11 @@ export async function getPosts(
 export async function generatePost(
   topic?: string,
   goal?: string,
+  useImage?: boolean,
 ): Promise<ManualPostResponse> {
   return apiFetch<ManualPostResponse>("/generate-post", {
     method: "POST",
-    body: JSON.stringify({ topic, goal }),
+    body: JSON.stringify({ topic, goal, use_image: useImage }),
   });
 }
 
@@ -156,6 +157,30 @@ export async function updateAnalytics(params: {
 
 export async function getHealthStatus(): Promise<Record<string, unknown>> {
   return apiFetch<Record<string, unknown>>("/health");
+}
+
+export async function getAutoImagesSetting(): Promise<{
+  enabled: boolean;
+  active: boolean;
+}> {
+  return apiFetch<{ enabled: boolean; active: boolean }>("/settings/auto-images");
+}
+
+export async function setAutoImagesSetting(enabled: boolean): Promise<{
+  success: boolean;
+  enabled: boolean;
+  active: boolean;
+  persisted: boolean;
+}> {
+  return apiFetch<{
+    success: boolean;
+    enabled: boolean;
+    active: boolean;
+    persisted: boolean;
+  }>("/settings/auto-images", {
+    method: "POST",
+    body: JSON.stringify({ enabled }),
+  });
 }
 
 // ─── Image endpoints ───────────────────────────────────────────────────────

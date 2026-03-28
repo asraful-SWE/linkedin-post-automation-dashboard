@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { generatePost } from "@/lib/api";
+import { useAutoImages } from "@/hooks/useAutoImages";
 import { Loader2, Zap, ChevronDown } from "lucide-react";
 import type { PostGoal } from "@/types";
 
@@ -25,12 +26,13 @@ export default function GenerateButton({ onGenerated }: GenerateButtonProps) {
   } | null>(null);
   const [selectedGoal, setSelectedGoal] = useState<PostGoal>("educational");
   const [showGoals, setShowGoals] = useState(false);
+  const { enabled: autoImagesEnabled, setAutoImages } = useAutoImages();
 
   const handleGenerate = async () => {
     setLoading(true);
     setResult(null);
     try {
-      const res = await generatePost(undefined, selectedGoal);
+      const res = await generatePost(undefined, selectedGoal, autoImagesEnabled);
       const message =
         res.message ??
         (res.success
@@ -103,12 +105,35 @@ export default function GenerateButton({ onGenerated }: GenerateButtonProps) {
       </div>
 
       {/* Selected goal display */}
-      <p className="text-[11px] text-zinc-400">
-        Goal:{" "}
-        <span className="font-medium text-zinc-600 dark:text-zinc-300">
-          {GOALS.find((g) => g.value === selectedGoal)?.label}
-        </span>
-      </p>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[11px] text-zinc-400">
+          Goal:{" "}
+          <span className="font-medium text-zinc-600 dark:text-zinc-300">
+            {GOALS.find((g) => g.value === selectedGoal)?.label}
+          </span>
+        </p>
+
+        <label className="inline-flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+          Auto Images
+          <button
+            type="button"
+            aria-label="Toggle auto images"
+            aria-pressed={autoImagesEnabled}
+            onClick={() => setAutoImages(!autoImagesEnabled)}
+            className={`relative h-5 w-9 rounded-full transition-colors ${
+              autoImagesEnabled
+                ? "bg-emerald-500"
+                : "bg-zinc-300 dark:bg-zinc-700"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
+                autoImagesEnabled ? "translate-x-4" : "translate-x-0.5"
+              }`}
+            />
+          </button>
+        </label>
+      </div>
 
       {result && (
         <div

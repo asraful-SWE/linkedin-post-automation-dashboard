@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getSchedulerStatus, startScheduler, stopScheduler, getHealthStatus } from "@/lib/api";
+import { getSchedulerStatus, startScheduler, stopScheduler, getHealthStatus, getAutoImagesSetting, setAutoImagesSetting } from "@/lib/api";
 import PageHeader from "@/components/PageHeader";
 import ToastContainer from "@/components/Toast";
 import { useToast } from "@/hooks/useToast";
+import { useAutoImages } from "@/hooks/useAutoImages";
 import type { SchedulerStatus } from "@/types";
 import { Play, Square, RefreshCw, Loader2, Server, Brain, ImageIcon, Zap } from "lucide-react";
 
@@ -14,15 +15,20 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const toast = useToast();
+  const { enabled: autoImagesEnabled, hydrated, setAutoImages } = useAutoImages();
 
   const refresh = async () => {
     try {
-      const [sched, healthData] = await Promise.all([
+      const [sched, healthData, autoImages] = await Promise.all([
         getSchedulerStatus().catch(() => null),
         getHealthStatus().catch(() => null),
+        getAutoImagesSetting().catch(() => null),
       ]);
       setScheduler(sched);
       setHealth(healthData);
+      if (autoImages && typeof autoImages.enabled === "boolean") {
+        setAutoImages(autoImages.enabled);
+      }
     } catch {}
     setLoading(false);
   };
@@ -48,7 +54,7 @@ export default function SettingsPage() {
   const capabilityItems = scheduler ? [
     { label: "Intelligent Topic Engine", enabled: !!scheduler.intelligent_topic_engine, icon: <Brain size={16} />, description: "Semantic clustering, series generation, trending boost" },
     { label: "Intelligent Content Engine", enabled: !!scheduler.intelligent_content_engine, icon: <Zap size={16} />, description: "Goal-driven generation with quality scoring" },
-    { label: "Auto Image Selection", enabled: !!scheduler.image_auto_selection, icon: <ImageIcon size={16} />, description: "Automatic Unsplash/Pexels image attachment" },
+    { label: "Auto Image Selection", enabled: autoImagesEnabled, icon: <ImageIcon size={16} />, description: "Automatic Unsplash/Pexels image attachment" },
   ] : [];
 
   return (
@@ -134,6 +140,43 @@ export default function SettingsPage() {
               <h2 className="mb-4 text-sm font-semibold text-zinc-800 dark:text-zinc-100">
                 Intelligent Capabilities
               </h2>
+
+              <div className="mb-4 flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800/40">
+                <div>
+                  <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Auto Images Switch</p>
+                  <p className="text-xs text-zinc-400">Turn on to request auto images during post generation.</p>
+                </div>
+                <button
+                  type="button"
+                  disabled={!hydrated}
+                  onClick={async () => {
+                    const next = !autoImagesEnabled;
+                    try {
+                      const res = await setAutoImagesSetting(next);
+                      setAutoImages(res.enabled);
+                      toast.success(`Auto Images ${res.enabled ? "enabled" : "disabled"}`);
+                      await refresh();
+                    } catch (e) {
+                      toast.error(
+                        "Failed to update Auto Images",
+                        e instanceof Error ? e.message : "",
+                      );
+                    }
+                  }}
+                  className={`relative h-7 w-12 rounded-full transition-colors ${
+                    autoImagesEnabled ? "bg-emerald-500" : "bg-zinc-300 dark:bg-zinc-700"
+                  } ${!hydrated ? "opacity-60" : ""}`}
+                  aria-label="Toggle auto images"
+                  aria-pressed={autoImagesEnabled}
+                >
+                  <span
+                    className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-transform ${
+                      autoImagesEnabled ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+
               <div className="space-y-3">
                 {capabilityItems.map((cap) => (
                   <div key={cap.label} className={`flex items-start gap-3 rounded-xl p-4 ${
