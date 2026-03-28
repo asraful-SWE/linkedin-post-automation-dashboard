@@ -1,83 +1,106 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Loader2, MailCheck } from "lucide-react";
+import { useCallback, useEffect } from "react";
+import { MailCheck, RefreshCw } from "lucide-react";
 import GenerateButton from "@/components/GenerateButton";
 import PostCard from "@/components/PostCard";
-import type { PostItem } from "@/lib/api";
-import { getPosts } from "@/lib/api";
+import PageHeader from "@/components/PageHeader";
+import EmptyState from "@/components/EmptyState";
+import ToastContainer from "@/components/Toast";
+import { SkeletonPostCard } from "@/components/SkeletonCard";
+import { usePosts } from "@/hooks/usePosts";
+import { useToast } from "@/hooks/useToast";
 
 export default function PendingPostsPage() {
-  const [posts, setPosts] = useState<PostItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchPendingPosts = useCallback(async () => {
-    try {
-      setError(null);
-      const data = await getPosts("pending");
-      setPosts(data);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to fetch pending posts.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { posts, loading, error, refetch, removePost } = usePosts("pending");
+  const toast = useToast();
 
   useEffect(() => {
-    fetchPendingPosts();
-  }, [fetchPendingPosts]);
+    if (error) toast.error("Failed to load posts", error);
+  }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const pendingCount = useMemo(() => posts.length, [posts]);
+  const handleActionCompleted = useCallback(
+    (postId: number, action: "approved" | "rejected") => {
+      removePost(postId);
+      if (action === "approved") {
+        toast.success(
+          "Post Published! 🎉",
+          "Your post is now live on LinkedIn.",
+        );
+      } else {
+        toast.warning(
+          "Post Rejected",
+          "The post has been removed from pending.",
+        );
+      }
+    },
+    [removePost, toast],
+  );
 
-  const handleActionCompleted = (postId: number) => {
-    setPosts((prev) => prev.filter((p) => p.id !== postId));
-  };
+  const handleGenerated = useCallback(() => {
+    refetch();
+    toast.success("Post Generated!", "New post sent for approval.");
+  }, [refetch, toast]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Pending Posts</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Review pending posts, then approve or reject them.
-          </p>
-        </div>
-        <GenerateButton onGenerated={fetchPendingPosts} />
+    <>
+      <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
+
+      <div className="space-y-6">
+        <PageHeader
+          title="Pending Posts"
+          description="Review and approve or reject AI-generated posts."
+          badge={
+            !loading && posts.length > 0 ? (
+              <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                {posts.length}
+              </span>
+            ) : undefined
+          }
+          action={
+            <div className="flex items-center gap-2">
+              <button
+                onClick={refetch}
+                className="rounded-xl border border-zinc-200 bg-white p-2.5 text-zinc-500 hover:text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 transition-colors"
+                title="Refresh"
+              >
+                <RefreshCw size={15} />
+              </button>
+              <GenerateButton onGenerated={handleGenerated} />
+            </div>
+          }
+        />
+
+        {loading && (
+          <div className="space-y-4">
+            {[0, 1, 2].map((i) => (
+              <SkeletonPostCard key={i} />
+            ))}
+          </div>
+        )}
+
+        {!loading && !error && posts.length === 0 && (
+          <EmptyState
+            icon={<MailCheck size={24} />}
+            title="No pending posts"
+            description="All clear! Generate a new post to get started."
+            action={<GenerateButton onGenerated={handleGenerated} />}
+          />
+        )}
+
+        {!loading && posts.length > 0 && (
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                showActions
+                onActionCompleted={handleActionCompleted}
+              />
+            ))}
+          </div>
+        )}
       </div>
-
-      <div className="rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-        <p className="text-sm text-zinc-600 dark:text-zinc-300">
-          <span className="font-semibold">{pendingCount}</span> post(s) waiting for approval
-        </p>
-      </div>
-
-      {loading && (
-        <div className="flex min-h-[40vh] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        </div>
-      )}
-
-      {!loading && error && (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-800 dark:bg-rose-950 dark:text-rose-300">
-          {error}
-        </div>
-      )}
-
-      {!loading && !error && posts.length === 0 && (
-        <div className="rounded-2xl border border-zinc-200 bg-white p-10 text-center dark:border-zinc-800 dark:bg-zinc-900">
-          <MailCheck className="mx-auto mb-3 h-8 w-8 text-zinc-400" />
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">No pending posts right now.</p>
-        </div>
-      )}
-
-      {!loading && !error && posts.length > 0 && (
-        <div className="grid grid-cols-1 gap-4">
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} showActions onActionCompleted={handleActionCompleted} />
-          ))}
-        </div>
-      )}
-    </div>
+    </>
   );
 }
