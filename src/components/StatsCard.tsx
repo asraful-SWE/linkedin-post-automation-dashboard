@@ -57,14 +57,14 @@ export default function StatsCard({
 
   return (
     <div
-      className={`rounded-2xl border border-zinc-200 p-5 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 ${bg}`}
+      className={`rounded-2xl border border-zinc-200 p-3 sm:p-4 lg:p-5 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 ${bg}`}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-3 sm:gap-4">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 truncate">
+          <p className="text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400 truncate">
             {title}
           </p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <p className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             {typeof value === "number" && !Number.isInteger(value)
               ? value.toFixed(1)
               : value}

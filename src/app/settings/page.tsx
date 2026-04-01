@@ -163,15 +163,15 @@ export default function SettingsPage() {
                       );
                     }
                   }}
-                  className={`relative h-7 w-12 rounded-full transition-colors ${
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
                     autoImagesEnabled ? "bg-emerald-500" : "bg-zinc-300 dark:bg-zinc-700"
-                  } ${!hydrated ? "opacity-60" : ""}`}
+                  } ${!hydrated ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
                   aria-label="Toggle auto images"
                   aria-pressed={autoImagesEnabled}
                 >
                   <span
-                    className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-transform ${
-                      autoImagesEnabled ? "translate-x-6" : "translate-x-1"
+                    className={`inline-block h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200 ${
+                      autoImagesEnabled ? "translate-x-5" : "translate-x-0.5"
                     }`}
                   />
                 </button>

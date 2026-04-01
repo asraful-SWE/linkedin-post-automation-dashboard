@@ -46,25 +46,25 @@ export default function PendingPostsPage() {
     <>
       <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <PageHeader
           title="Pending Posts"
           description="Review and approve or reject AI-generated posts."
           badge={
             !loading && posts.length > 0 ? (
-              <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+              <span className="rounded-full bg-amber-100 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold text-amber-700 dark:bg-amber-950 dark:text-amber-300">
                 {posts.length}
               </span>
             ) : undefined
           }
           action={
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={refetch}
-                className="rounded-xl border border-zinc-200 bg-white p-2.5 text-zinc-500 hover:text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 transition-colors"
+                className="rounded-lg border border-zinc-200 bg-white p-2.5 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50 min-h-10 min-w-10 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 transition-colors"
                 title="Refresh"
               >
-                <RefreshCw size={15} />
+                <RefreshCw size={18} className="sm:size-[15px]" />
               </button>
               <GenerateButton onGenerated={handleGenerated} />
             </div>
@@ -72,7 +72,7 @@ export default function PendingPostsPage() {
         />
 
         {loading && (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {[0, 1, 2].map((i) => (
               <SkeletonPostCard key={i} />
             ))}
@@ -89,7 +89,7 @@ export default function PendingPostsPage() {
         )}
 
         {!loading && posts.length > 0 && (
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2" style={{ gridAutoRows: 'max-content' }}>
             {posts.map((post) => (
               <PostCard
                 key={post.id}

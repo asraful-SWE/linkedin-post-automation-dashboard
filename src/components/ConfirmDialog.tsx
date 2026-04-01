@@ -67,32 +67,32 @@ export default function ConfirmDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-title"
-        className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-zinc-900 animate-in fade-in zoom-in-95 duration-150"
+        className="relative w-full max-w-lg sm:max-w-md rounded-2xl bg-white p-5 sm:p-6 shadow-2xl dark:bg-zinc-900 animate-in fade-in zoom-in-95 duration-150"
       >
-        <div className="flex items-start gap-4">
-          <div className={`rounded-xl p-3 ${iconStyles[variant]}`}>
-            <AlertTriangle size={20} />
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className={`rounded-lg sm:rounded-xl p-2.5 sm:p-3 flex-shrink-0 ${iconStyles[variant]}`}>
+            <AlertTriangle size={20} className="sm:size-[20px]" />
           </div>
           <div className="flex-1">
-            <h2 id="confirm-title" className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+            <h2 id="confirm-title" className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-zinc-50">
               {title}
             </h2>
-            <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">{message}</p>
+            <p className="mt-1.5 sm:mt-2 text-sm text-zinc-500 dark:text-zinc-400">{message}</p>
           </div>
         </div>
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
           <button
             ref={cancelRef}
             onClick={onCancel}
             disabled={loading}
-            className="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+            className="rounded-lg border border-zinc-200 bg-white px-4 py-2.5 sm:py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 min-h-10 transition-colors dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
           >
             {cancelLabel}
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold shadow-sm disabled:opacity-60 transition-colors ${variantStyles[variant]}`}
+            className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 sm:py-2 text-sm font-semibold shadow-sm disabled:opacity-60 min-h-10 transition-colors ${variantStyles[variant]}`}
           >
             {loading && <Loader2 size={14} className="animate-spin" />}
             {confirmLabel}

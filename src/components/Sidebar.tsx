@@ -12,12 +12,15 @@ import {
   Menu,
   Linkedin,
   Circle,
+  Newspaper,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getPosts } from "@/lib/api";
+import ApiHealth from "@/components/ApiHealth";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/content", label: "Content Feed", icon: Newspaper },
   { href: "/pending-posts", label: "Pending", icon: Clock3 },
   { href: "/posts", label: "All Posts", icon: FileText },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
@@ -41,7 +44,7 @@ export default function Sidebar() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open navigation"
-        className="fixed left-4 top-4 z-50 rounded-xl border border-zinc-200 bg-white p-2 shadow-md dark:border-zinc-800 dark:bg-zinc-900 lg:hidden"
+        className="fixed left-4 top-4 z-50 rounded-lg p-2.5 border border-zinc-200 bg-white shadow-md hover:bg-zinc-50 active:bg-zinc-100 min-h-10 min-w-10 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 lg:hidden"
       >
         <Menu size={20} />
       </button>
@@ -75,14 +78,14 @@ export default function Sidebar() {
           </div>
           <button
             onClick={() => setOpen(false)}
-            className="rounded-lg p-1 text-zinc-400 hover:text-zinc-600 lg:hidden"
+            className="rounded-lg p-2.5 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 min-h-10 min-w-10 lg:hidden"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 space-y-0.5 p-3">
+        <nav className="flex-1 space-y-1 p-3">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active =
               href === "/dashboard"
@@ -93,7 +96,7 @@ export default function Sidebar() {
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className={`group flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                className={`group flex items-center justify-between rounded-lg px-3 py-3 min-h-12 text-sm font-medium transition-all ${
                   active
                     ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
                     : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200"
@@ -101,13 +104,13 @@ export default function Sidebar() {
               >
                 <span className="flex items-center gap-3">
                   <Icon
-                    size={17}
+                    size={18}
                     className={active ? "text-blue-600 dark:text-blue-400" : ""}
                   />
                   {label}
                 </span>
                 {label === "Pending" && pendingCount > 0 && (
-                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-white">
+                  <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-amber-500 px-1.5 text-[11px] font-bold text-white">
                     {pendingCount}
                   </span>
                 )}
@@ -124,6 +127,7 @@ export default function Sidebar() {
               System Online
             </p>
           </div>
+          <ApiHealth className="mb-1" />
           <p className="text-[10px] text-zinc-400 dark:text-zinc-600">
             LinkedIn AI Poster v2.0
           </p>

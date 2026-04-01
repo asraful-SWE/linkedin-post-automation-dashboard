@@ -1,7 +1,7 @@
 export function SkeletonCard() {
   return (
-    <div className="animate-pulse rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="flex items-start justify-between">
+    <div className="animate-pulse rounded-2xl border border-zinc-200 bg-white p-3 sm:p-4 lg:p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
         <div className="space-y-3 flex-1">
           <div className="h-4 w-24 rounded-lg bg-zinc-200 dark:bg-zinc-700" />
           <div className="h-8 w-16 rounded-lg bg-zinc-200 dark:bg-zinc-700" />
@@ -14,15 +14,15 @@ export function SkeletonCard() {
 
 export function SkeletonPostCard() {
   return (
-    <div className="animate-pulse rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div className="space-y-2">
+    <div className="animate-pulse rounded-2xl border border-zinc-200 bg-white p-3 sm:p-4 lg:p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="mb-3 sm:mb-4 flex items-start justify-between gap-2 sm:gap-3">
+        <div className="space-y-2 sm:space-y-3 flex-1">
           <div className="h-4 w-48 rounded-lg bg-zinc-200 dark:bg-zinc-700" />
           <div className="h-3 w-24 rounded-lg bg-zinc-200 dark:bg-zinc-700" />
         </div>
         <div className="h-6 w-16 rounded-full bg-zinc-200 dark:bg-zinc-700" />
       </div>
-      <div className="space-y-2 mb-4">
+      <div className="space-y-2 sm:space-y-3 mb-4">
         <div className="h-3 w-full rounded bg-zinc-200 dark:bg-zinc-700" />
         <div className="h-3 w-5/6 rounded bg-zinc-200 dark:bg-zinc-700" />
         <div className="h-3 w-4/6 rounded bg-zinc-200 dark:bg-zinc-700" />

@@ -26,14 +26,14 @@ export default function TopicChart({ data }: TopicChartProps) {
   const sorted = [...data].sort((a, b) => b.engagement - a.engagement).slice(0, 8);
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <h3 className="mb-4 text-sm font-semibold text-zinc-700 dark:text-zinc-300">Top Performing Topics</h3>
+    <div className="rounded-2xl border border-zinc-200 bg-white p-3 sm:p-4 lg:p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <h3 className="mb-3 sm:mb-4 text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300">Top Performing Topics</h3>
       {sorted.length === 0 ? (
         <p className="py-12 text-center text-sm text-zinc-400">No topic data available.</p>
       ) : (
-        <div className="h-72">
+        <div className="h-80 min-h-[320px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={sorted} layout="vertical" margin={{ left: 20 }}>
+            <BarChart data={sorted} layout="vertical" margin={{ left: 20, right: 20, top: 10, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a" opacity={0.3} horizontal={false} />
               <XAxis
                 type="number"

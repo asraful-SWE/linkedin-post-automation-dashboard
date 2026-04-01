@@ -17,6 +17,62 @@ export interface PostItem {
   engagement_score?: number;
 }
 
+// ─── Content Intelligence Types ─────────────────────────────────────────────
+export type ContentStatus = "pending" | "extracted" | "processed" | "failed" | "skipped";
+export type ContentSource = "hackernews" | "reddit" | "devto" | "medium" | "techcrunch";
+
+export interface ContentItem {
+  id: number;
+  title: string;
+  url: string;
+  source: ContentSource | string;
+  author?: string | null;
+  summary?: string | null;
+  key_points: string[];
+  image_url?: string | null;
+  tags: string[];
+  score: number;
+  external_score: number;
+  published_at?: string | null;
+  created_at?: string | null;
+  status: ContentStatus | string;
+  used_for_post: boolean;
+}
+
+export interface ContentListResponse {
+  items: ContentItem[];
+  total: number;
+}
+
+export interface ContentStatsResponse {
+  total: number;
+  by_status: Record<string, number>;
+  by_source: Record<string, number>;
+  average_score: number;
+}
+
+export interface GeneratedPostResponse {
+  success: boolean;
+  post_content?: string | null;
+  image_url?: string | null;
+  content_id: number;
+  error?: string | null;
+}
+
+export interface PipelineResponse {
+  success: boolean;
+  message: string;
+  stats?: {
+    collected: number;
+    deduplicated: number;
+    extracted: number;
+    filtered: number;
+    enriched: number;
+    stored: number;
+    errors: number;
+  };
+}
+
 // ─── Analytics Types ────────────────────────────────────────────────────────
 export interface TopicBreakdown {
   topic: string;

@@ -17,7 +17,7 @@ export default function GoalBadge({ goal }: GoalBadgeProps) {
   const config = goalConfig[goal as PostGoal];
   if (!config) return null;
   return (
-    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${config.color}`}>
+    <span className={`inline-flex items-center rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 text-xs font-medium ${config.color}`}>
       {config.label}
     </span>
   );

@@ -50,25 +50,25 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
   return (
     <div
       role="alert"
-      className={`flex w-full max-w-sm items-start gap-3 rounded-2xl border p-4 shadow-lg transition-all duration-200 ${
+      className={`flex w-full max-w-xs sm:max-w-sm items-start gap-3 rounded-2xl border p-3 sm:p-4 shadow-lg transition-all duration-200 ${
         styles[toast.type]
       } ${visible ? "translate-x-0 opacity-100" : "translate-x-8 opacity-0"}`}
     >
-      <span className={`mt-0.5 shrink-0 ${iconStyles[toast.type]}`}>
+      <span className={`mt-0.5 shrink-0 flex-shrink-0 ${iconStyles[toast.type]}`}>
         {icons[toast.type]}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold">{toast.title}</p>
+        <p className="text-xs sm:text-sm font-semibold">{toast.title}</p>
         {toast.message && (
-          <p className="mt-0.5 text-xs opacity-80">{toast.message}</p>
+          <p className="mt-0.5 sm:mt-1 text-[11px] sm:text-xs opacity-80">{toast.message}</p>
         )}
       </div>
       <button
         onClick={handleRemove}
-        className="shrink-0 rounded-lg p-1 opacity-60 hover:opacity-100 transition-opacity"
+        className="shrink-0 rounded-lg p-1.5 sm:p-1 opacity-60 hover:opacity-100 transition-opacity min-h-8 min-w-8"
         aria-label="Dismiss notification"
       >
-        <X size={14} />
+        <X size={16} className="sm:size-[14px]" />
       </button>
     </div>
   );

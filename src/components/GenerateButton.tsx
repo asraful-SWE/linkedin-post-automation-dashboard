@@ -58,15 +58,15 @@ export default function GenerateButton({ onGenerated }: GenerateButtonProps) {
         <button
           onClick={handleGenerate}
           disabled={loading}
-          className="inline-flex items-center gap-2 rounded-l-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 sm:gap-2 rounded-l-xl bg-blue-600 px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? (
             <>
-              <Loader2 size={15} className="animate-spin" /> Generating…
+              <Loader2 size={15} className="animate-spin" /> <span className="hidden sm:inline">Generating…</span><span className="sm:hidden">Generating</span>
             </>
           ) : (
             <>
-              <Zap size={15} /> Generate Post
+              <Zap size={15} /> <span className="hidden sm:inline">Generate Post</span><span className="sm:hidden">Generate</span>
             </>
           )}
         </button>
@@ -75,7 +75,7 @@ export default function GenerateButton({ onGenerated }: GenerateButtonProps) {
             type="button"
             disabled={loading}
             onClick={() => setShowGoals((s) => !s)}
-            className="inline-flex h-full items-center rounded-r-xl border-l border-blue-700 bg-blue-600 px-2.5 text-white hover:bg-blue-700 disabled:opacity-50"
+            className="inline-flex h-full items-center rounded-r-xl border-l border-blue-700 bg-blue-600 px-2 sm:px-2.5 text-white hover:bg-blue-700 disabled:opacity-50"
             aria-label="Select goal"
           >
             <ChevronDown size={14} />
@@ -113,22 +113,22 @@ export default function GenerateButton({ onGenerated }: GenerateButtonProps) {
           </span>
         </p>
 
-        <label className="inline-flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+        <label className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400">
           Auto Images
           <button
             type="button"
-            aria-label="Toggle auto images"
-            aria-pressed={autoImagesEnabled}
+            role="switch"
+            aria-checked={autoImagesEnabled}
             onClick={() => setAutoImages(!autoImagesEnabled)}
-            className={`relative h-5 w-9 rounded-full transition-colors ${
+            className={`relative inline-flex h-5 sm:h-6 w-10 sm:w-11 items-center rounded-full transition-colors duration-200 ${
               autoImagesEnabled
                 ? "bg-emerald-500"
                 : "bg-zinc-300 dark:bg-zinc-700"
             }`}
           >
             <span
-              className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                autoImagesEnabled ? "translate-x-4" : "translate-x-0.5"
+              className={`inline-block h-4 sm:h-5 w-4 sm:w-5 transform rounded-full bg-white shadow-md transition-transform duration-200 ${
+                autoImagesEnabled ? "translate-x-5 sm:translate-x-6" : "translate-x-0.5"
               }`}
             />
           </button>

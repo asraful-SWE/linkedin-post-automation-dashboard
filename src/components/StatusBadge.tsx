@@ -36,7 +36,7 @@ export default function StatusBadge({ status }: StatusBadgeProps) {
   const { dot, badge, label } = config[status] ?? config.pending;
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${badge}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2 sm:px-2.5 py-0.5 sm:py-1 text-xs font-semibold ${badge}`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
       {label}

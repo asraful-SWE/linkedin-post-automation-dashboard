@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Image as ImageIcon } from "lucide-react";
+import { ChevronDown, ChevronUp, Image as ImageIcon, AlertCircle } from "lucide-react";
 import type { PostItem } from "@/types";
 import StatusBadge from "@/components/StatusBadge";
 import ImageUpload from "@/components/ImageUpload";
@@ -33,14 +33,14 @@ export default function PostCard({
       : post.content;
 
   return (
-    <article className="group rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
+    <article className="group rounded-2xl border border-zinc-200 bg-white p-3 sm:p-4 lg:p-5 shadow-sm transition-all duration-300 ease-in-out hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
       {/* Header */}
-      <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+      <div className="mb-3 sm:mb-4 flex flex-wrap items-start justify-between gap-2 sm:gap-3">
         <div className="min-w-0">
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+          <h3 className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
             {post.topic}
           </h3>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-zinc-400 mt-0.5 sm:mt-1">
             {new Date(post.created_at).toLocaleString()}
           </p>
         </div>
@@ -51,16 +51,16 @@ export default function PostCard({
         </div>
       </div>
 
-      {/* Content */}
-      <div className="mb-3">
-        <p className="whitespace-pre-wrap text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+      {/* Content with smooth expand/collapse */}
+      <div className="mb-3 sm:mb-4 transition-all duration-300 ease-in-out">
+        <p className="whitespace-pre-wrap text-xs sm:text-sm leading-5 sm:leading-6 text-zinc-700 dark:text-zinc-300">
           {displayContent}
         </p>
         {isLong && (
           <button
             type="button"
             onClick={() => setExpanded((e) => !e)}
-            className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+            className="mt-2 sm:mt-3 inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
           >
             {expanded ? (
               <>
@@ -75,9 +75,11 @@ export default function PostCard({
         )}
       </div>
 
+      
+
       {/* Existing image */}
       {post.image_url && post.status !== "pending" && (
-        <div className="mb-3 flex items-center gap-2 rounded-lg bg-zinc-50 px-3 py-2 dark:bg-zinc-800/50">
+        <div className="mb-3 sm:mb-4 flex items-center gap-2 rounded-lg bg-zinc-50 px-3 sm:px-4 py-2 sm:py-3 dark:bg-zinc-800/50">
           <ImageIcon size={13} className="text-zinc-400" />
           <a
             href={post.image_url}
@@ -92,7 +94,7 @@ export default function PostCard({
 
       {/* Actions */}
       {showActions && post.status === "pending" && (
-        <div className="mt-4 space-y-3 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+        <div className="mt-4 sm:mt-5 space-y-3 sm:space-y-4 border-t border-zinc-100 pt-4 sm:pt-5 dark:border-zinc-800">
           <ImageUpload
             imageUrl={imageUrl}
             onImageUrlChange={(val) => {
@@ -115,7 +117,7 @@ export default function PostCard({
 
       {/* LinkedIn ID */}
       {post.linkedin_post_id && (
-        <p className="mt-2 text-[10px] text-zinc-400">
+        <p className="mt-2 sm:mt-3 text-[10px] text-zinc-400">
           LinkedIn ID: {post.linkedin_post_id}
         </p>
       )}

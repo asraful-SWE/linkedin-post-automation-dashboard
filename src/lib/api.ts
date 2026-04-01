@@ -19,28 +19,55 @@ import type {
 
 const API_BASE = "/api/proxy";
 
+// Debug function to log API calls
+function debugApiCall(endpoint: string, options?: RequestInit) {
+  if (process.env.NODE_ENV === "development") {
+    console.log(`🔗 API Call: ${API_BASE}${endpoint}`, options);
+  }
+}
+
 // ─── Core fetch helpers ────────────────────────────────────────────────────
 
 async function apiFetch<T>(
   endpoint: string,
   options?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-  });
-  if (!res.ok) {
-    let detail = `${res.status} ${res.statusText}`;
-    try {
-      const body = await res.json();
-      detail = body?.detail ?? body?.error ?? detail;
-    } catch {}
-    throw new Error(detail);
+  debugApiCall(endpoint, options);
+  
+  try {
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+      },
+    });
+    
+    if (!res.ok) {
+      let detail = `${res.status} ${res.statusText}`;
+      try {
+        const body = await res.json();
+        detail = body?.detail ?? body?.error ?? detail;
+      } catch {}
+      
+      // Enhanced error message for debugging
+      const errorMsg = process.env.NODE_ENV === "development" 
+        ? `API Error: ${endpoint} -> ${detail}. Check if backend is running on localhost:8000`
+        : detail;
+      
+      throw new Error(errorMsg);
+    }
+    return res.json() as Promise<T>;
+  } catch (error) {
+    // Network or other errors
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      const msg = process.env.NODE_ENV === "development"
+        ? "Backend connection failed. Is FastAPI running on localhost:8000?"
+        : "Service unavailable";
+      throw new Error(msg);
+    }
+    throw error;
   }
-  return res.json() as Promise<T>;
 }
 
 async function apiFetchForm<T>(
@@ -321,4 +348,130 @@ export type {
   ImageResult,
   ABTest,
   TopicPrediction,
+};
+
+// ─── Content Intelligence API ──────────────────────────────────────────────
+
+import type {
+  ContentItem,
+  ContentListResponse,
+  ContentStatsResponse,
+  GeneratedPostResponse,
+  PipelineResponse,
+  ContentSource,
+} from "@/types";
+
+export async function getContent(params?: {
+  limit?: number;
+  source?: ContentSource | string;
+  status?: string;
+}): Promise<ContentListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params?.limit) searchParams.set("limit", String(params.limit));
+  if (params?.source) searchParams.set("source", params.source);
+  if (params?.status) searchParams.set("status", params.status);
+  const query = searchParams.toString() ? `?${searchParams}` : "";
+  return apiFetch<ContentListResponse>(`/content${query}`);
+}
+
+export async function getTopContent(params?: {
+  limit?: number;
+  min_score?: number;
+  unused_only?: boolean;
+}): Promise<ContentListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params?.limit) searchParams.set("limit", String(params.limit));
+  if (params?.min_score) searchParams.set("min_score", String(params.min_score));
+  if (params?.unused_only !== undefined) searchParams.set("unused_only", String(params.unused_only));
+  const query = searchParams.toString() ? `?${searchParams}` : "";
+  return apiFetch<ContentListResponse>(`/content/top${query}`);
+}
+
+export async function getContentStats(): Promise<ContentStatsResponse> {
+  return apiFetch<ContentStatsResponse>("/content/stats");
+}
+
+export async function getContentById(id: number): Promise<ContentItem> {
+  return apiFetch<ContentItem>(`/content/${id}`);
+}
+
+export async function generatePostFromContent(
+  contentId: number,
+  markAsUsed = true,
+): Promise<GeneratedPostResponse> {
+  return apiFetch<GeneratedPostResponse>(
+    `/content/${contentId}/generate-post?mark_as_used=${markAsUsed}`,
+    { method: "POST" },
+  );
+}
+
+export async function generatePostAuto(
+  minScore = 60,
+): Promise<GeneratedPostResponse> {
+  return apiFetch<GeneratedPostResponse>(
+    `/content/generate-post/auto?min_score=${minScore}`,
+    { method: "POST" },
+  );
+}
+
+export async function runContentPipeline(
+  runInBackground = true,
+): Promise<PipelineResponse> {
+  return apiFetch<PipelineResponse>(
+    `/content/pipeline/run?run_in_background=${runInBackground}`,
+    { method: "POST" },
+  );
+}
+
+export async function saveGeneratedPost(
+  contentId: number,
+  postContent: string,
+  imageUrl?: string,
+  topic?: string,
+): Promise<{ success: boolean; post_id?: number; error?: string }> {
+  return apiFetch("/content/save-generated-post", {
+    method: "POST",
+    body: JSON.stringify({
+      content_id: contentId,
+      post_content: postContent,
+      image_url: imageUrl,
+      topic: topic,
+    }),
+  });
+}
+
+export async function cleanupContent(days = 7): Promise<{
+  success: boolean;
+  deleted: number;
+  message: string;
+}> {
+  return apiFetch(`/content/cleanup?days=${days}`, { method: "DELETE" });
+}
+
+export async function markContentUsed(contentId: number): Promise<{
+  success: boolean;
+  content_id: number;
+}> {
+  return apiFetch(`/content/${contentId}/mark-used`, { method: "POST" });
+}
+
+export async function getPostSuggestions(params?: {
+  limit?: number;
+  min_score?: number;
+}): Promise<{ suggestions: ContentItem[]; total: number }> {
+  const searchParams = new URLSearchParams();
+  if (params?.limit) searchParams.set("limit", String(params.limit));
+  if (params?.min_score) searchParams.set("min_score", String(params.min_score));
+  const query = searchParams.toString() ? `?${searchParams}` : "";
+  return apiFetch(`/content/suggestions/posts${query}`);
+}
+
+// Re-export content types
+export type {
+  ContentItem,
+  ContentListResponse,
+  ContentStatsResponse,
+  GeneratedPostResponse,
+  PipelineResponse,
+  ContentSource,
 };

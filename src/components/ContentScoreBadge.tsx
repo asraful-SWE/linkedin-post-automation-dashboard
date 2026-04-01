@@ -14,7 +14,7 @@ export default function ContentScoreBadge({ score, size = "sm" }: ContentScoreBa
   if (score == null || score === 0) return null;
   const rounded = Math.round(score * 10) / 10;
   const colorClass = getScoreColor(score);
-  const sizeClass = size === "sm" ? "px-2 py-0.5 text-xs" : "px-2.5 py-1 text-sm";
+  const sizeClass = size === "sm" ? "px-2 sm:px-2.5 py-0.5 sm:py-1 text-xs" : "px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm";
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-full border font-semibold ${colorClass} ${sizeClass}`}
