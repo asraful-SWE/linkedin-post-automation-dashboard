@@ -264,7 +264,6 @@ export default function ContentFeedPage() {
       <PageHeader
         title="Content Feed"
         description="Collected tech news and articles ready for LinkedIn posts"
-        icon={<Newspaper className="text-blue-600" size={24} />}
       />
       
       {/* Stats Bar */}
